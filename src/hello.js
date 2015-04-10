@@ -1,18 +1,18 @@
-import {Component, Template, bootstrap, If} from 'angular2/angular2';
+import {Component, Template, bootstrap} from 'angular2/angular2';
+import {Zippy} from 'zippy';
 
 @Component({
-    selector: 'hello'  //TODO: default to camel-cased class name if not provided?
+  selector: 'hello'
 })
 @Template({
-    inline: `<span *if="name">Hello, {{name}}!</span>`,
-    directives: [If]
+  inline: `<zippy title='Details'>
+            <p>This is some content</p>
+            </zippy>`,
+  directives: [Zippy]
 })
 export class Hello {
-    name: string = 'World';
-    constructor() {
-        setTimeout(() => {
-          this.name = 'NEW World'
-        }, 2000);
+    constructor(){
+        console.debug('aisdnfioansdionf');
     }
 }
 
