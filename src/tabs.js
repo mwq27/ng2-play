@@ -1,16 +1,24 @@
-import {Component, Template, For} from 'angular2/angular2';
+import {Component, Template, For, bootstrap, Parent} from 'angular2/angular2';
 
 @Component({
     selector: 'tabs'
 })
 @Template({
-    directives: [For],
     inline: `
         <ul>
-            <li *for="#tab of tabs">{{tab.tabTitle}}</li>
+            <li *for="#tab of tabs" (click)="selectTab(tab)">
+                {{tab.tabTitle}}
+            </li>
         </ul>
+        <tab tab-title="Tab 1">
+            Here's some tab 1 stuff
+        </tab>
+        <tab tab-title="Tab 2">
+            Here's some tab 2 stuff
+        </tab>
         <content></content>
     `,
+    directives: [For, Tab]
 })
 export class Tabs {
     constructor() {
@@ -18,7 +26,18 @@ export class Tabs {
     }
 
     addTab(tab: Tab) {
+        console.log(tab)
+        if (this.tabs.length === 0) {
+            tab.active = true
+        }
         this.tabs.push(tab);
+    }
+
+    selectTab(tab: Tab) {
+        this.tabs.forEach((tab) => {
+            tab.active = false;
+        });
+        tab.active = true;
     }
 }
 
@@ -30,13 +49,17 @@ export class Tabs {
 })
 @Template({
     inline: `
-        <div>
+        <div [hidden]="!active">
             <content></content>
         </div>
     `
 })
 export class Tab {
     constructor(@Parent() tabs: Tabs) {
-        tabs.addTab(this)
+        console.log('vvvvvv', tabs);
+        tabs.addTab(this);
     }
+}
+export function main() {
+    return bootstrap(Tabs);
 }

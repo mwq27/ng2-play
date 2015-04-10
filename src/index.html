@@ -17,14 +17,18 @@
     <script src="lib/angular2.js"></script>
 </head>
 <body>
-    <hello>
-        Loading...
-    </hello>
+    <tabs>
+    </tabs>
 </body>
 
 <!-- Application bootstrap logic -->
 <script>
-    System.import('hello').catch(console.log.bind(console));
+    System.import('tabs')
+        .then(function(module) {
+            zone = zone.fork(Zone.longStackTraceZone);            
+            return module.main();
+        })
+        .catch(console.log.bind(console));
 </script>
 
 </html>

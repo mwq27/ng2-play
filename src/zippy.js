@@ -12,7 +12,6 @@ import { Component, Template } from 'angular2/angular2';
 export class Zippy {
     constructor() {
         this.visible = true;
-        console.debug('ppppp')
     }
 
     toggle() {
