@@ -14,10 +14,9 @@ import MovieFactory from './services/movieFactory';
     services: [MovieFactory]
 })
 @Template({
-    directives: [Tabs, For],
+    directives: [Tabs],
     inline: `
       <tabs>
-        <li *for="#mov of list" [tab-title]="mov.title">{{mov.desc}}</li>
       </tabs>
     `,
 })
@@ -65,7 +64,7 @@ export class Tabs {
                     this.tabs.push(t);
                 });
             }
-        }, 10);   
+        }, 100);   
     }
 
     selectTab(tab, i) {
