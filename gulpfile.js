@@ -71,7 +71,7 @@ gulp.task('play', ['default'], function () {
     var serveStatic = require('serve-static');
     var open = require('open');
 
-    var port = 9000, app;
+    var port = 9001, app;
 
     gulp.watch(PATHS.src.html, ['html']);
     gulp.watch(PATHS.src.js, ['js']);

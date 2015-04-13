@@ -18,23 +18,25 @@ import MovieFactory from './services/movieFactory';
     directives: [For, Tabs, Tab, DynamicComp],
     inline: `
       <tabs>
-        <dynamic-comp *for="#mov of list; #i=index" [componen]="Tab" [tab-title]="mov.title">{{mov.desc}}</dynamic-comp>
+        <dynamic-comp *for="#mov of tabs; #i=index" [component]="mov" [tab-title]="mov.title">{{mov.desc}}</dynamic-comp>
       </tabs>
     `,
 })
 export class Hello {
     constructor(movieFactory: MovieFactory) {
-        this.factory = movieFactory;
-        this.list = [{title: 'first title', desc: 'first desc'}];
-        this.factory.getMovies()
-            .then(mov => {
-                mov.movies.forEach(movie => {
-                    this.list.push({
-                        title: movie.title, desc: movie.description
-                    });
-                    console.debug(this.list);
-                });
-            });
+        // this.factory = movieFactory;
+        // this.tabs = Tabs.tabs;
+        console.debug("tabs")
+        // this.list = [{title: 'first title', desc: 'first desc'}];
+        // this.factory.getMovies()
+        //     .then(mov => {
+        //         mov.movies.forEach(movie => {
+        //             this.list.push({
+        //                 title: movie.title, desc: movie.description
+        //             });
+        //             console.debug(this.list);
+        //         });
+        //     });
     }
 }
 
@@ -57,8 +59,13 @@ export class Tabs {
     constructor() {
         this.tabs = [];
     }
+    
+    getTabs() {
+        return this.tabs;
+    }
 
     addTab(tab: Tab) {
+        console.debug('addTab', tab);
         if (this.tabs.length === 0) {
             tab.active = true
         }
@@ -100,7 +107,8 @@ class DynamicComp {
     selector: 'tab',
     bind: {
         'tabTitle': 'tab-title'
-    }
+    },
+    services: [MovieFactory]
 })
 @Template({
     inline: `
@@ -110,8 +118,19 @@ class DynamicComp {
     `
 })
 export class Tab {
-    constructor(@Parent() tabs: Tabs) {
-        tabs.addTab(this);
+    constructor(@Parent() tabs: Tabs, movieFactory:MovieFactory) {
+        this.factory = movieFactory;
+        this.list = [{title: 'first title', desc: 'first desc'}];
+        this.factory.getMovies()
+            .then(mov => {
+                mov.movies.forEach(movie => {
+                    this.list.push({
+                        title: movie.title, desc: movie.description
+                    });
+                    console.debug('what', this.list);
+                    tabs.addTab(this.list);
+                });
+            });
     }
 }
 export function main() {

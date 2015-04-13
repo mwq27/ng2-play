@@ -2,6 +2,7 @@ import {
     Component, 
     Template, 
     For, 
+    If,
     bootstrap, 
     Parent, 
     DynamicComponent} from 'angular2/angular2';
@@ -13,24 +14,24 @@ import MovieFactory from './services/movieFactory';
     services: [MovieFactory]
 })
 @Template({
-    directives: [Tab, Tabs, For],
+    directives: [Tabs, For],
     inline: `
       <tabs>
-        <tab *for="#mov of list; #i=index" [tab-title]="mov.title">{{mov.desc}}</tab>
+        <li *for="#mov of list" [tab-title]="mov.title">{{mov.desc}}</li>
       </tabs>
     `,
 })
 export class Hello {
     constructor(movieFactory: MovieFactory) {
         this.factory = movieFactory;
-        this.list = [{title: 'first title', desc: 'first desc'}];
+        this.list = [];
         this.factory.getMovies()
             .then(mov => {
                 mov.movies.forEach(movie => {
+                    movie.active = this.list.length === 0;
                     this.list.push({
-                        title: movie.title, desc: movie.description
+                        title: movie.title, desc: movie.description, active: movie.active
                     });
-                    console.debug(this.list);
                 });
             });
     }
@@ -38,60 +39,40 @@ export class Hello {
 
 
 @Component({
-    selector: 'tabs'
+    selector: 'tabs',
+    services: [],
 })
 @Template({
     inline: `
         <ul>
-            <li *for="#tab of tabs" (click)="selectTab(tab)">
-                {{tab.tabTitle}}
+            <li *for="#tab of tabs; #i = index" (click)="selectTab(tab, i)">
+                {{tab.title}}
             </li>
         </ul>
-        <content></content>
+        <div *if="tabs[index]">
+            {{tabs[index].desc}}
+        </div>
     `,
-    directives: [For, Tab]
+    directives: [For, If]
 })
 export class Tabs {
-    constructor() {
+    constructor(@Parent() hello: Hello) {
         this.tabs = [];
+        this.index = 0;
+        setTimeout(() =>  {
+            if (hello.list.length) {
+                hello.list.forEach(t => {
+                    this.tabs.push(t);
+                });
+            }
+        }, 10);   
     }
 
-    addTab(tab: Tab) {
-        console.log('the tab', tab);
-        
-        if (this.tabs.length === 0) {
-            tab.active = true
-        }
-        this.tabs.push(tab);
-    }
-
-    selectTab(tab: Tab) {
-        this.tabs.forEach((tab) => {
-            tab.active = false;
-        });
-        tab.active = true;
+    selectTab(tab, i) {
+        this.index = i;
     }
 }
 
-@Component({
-    selector: 'tab',
-    bind: {
-        'tabTitle': 'tab-title'
-    }
-})
-@Template({
-    directives: [Tabs],
-    inline: `
-        <div [hidden]="!active">
-            <content></content>
-        </div>
-    `
-})
-export class Tab {
-    constructor(@Parent() tabs: Tabs) {
-        tabs.addTab(this);
-    }
-}
 export function main() {
     return bootstrap(Hello);
 }

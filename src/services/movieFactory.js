@@ -1,7 +1,7 @@
 export default class movieFactory {
     movieList: array;
     constructor() {
-        this.movieList = null;
+        this.movieList = [];
     }
 
     getMovies() {
