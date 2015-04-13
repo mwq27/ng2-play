@@ -4,7 +4,9 @@ import {
     For, 
     bootstrap, 
     Parent, 
-    DynamicComponent} from 'angular2/angular2';
+    DynamicComponent,
+    PrivateComponentLoader,
+    PrivateComponentLocation} from 'angular2/angular2';
 import MovieFactory from './services/movieFactory';
 
 
@@ -13,10 +15,10 @@ import MovieFactory from './services/movieFactory';
     services: [MovieFactory]
 })
 @Template({
-    directives: [Tab, Tabs, For],
+    directives: [For, Tabs, Tab, DynamicComp],
     inline: `
       <tabs>
-        <tab *for="#mov of list; #i=index" [tab-title]="mov.title">{{mov.desc}}</tab>
+        <dynamic-comp *for="#mov of list; #i=index" [componen]="Tab" [tab-title]="mov.title">{{mov.desc}}</dynamic-comp>
       </tabs>
     `,
 })
@@ -57,8 +59,6 @@ export class Tabs {
     }
 
     addTab(tab: Tab) {
-        console.log('the tab', tab);
-        
         if (this.tabs.length === 0) {
             tab.active = true
         }
@@ -73,6 +73,29 @@ export class Tabs {
     }
 }
 
+
+@DynamicComponent({
+    selector: 'dynamic-comp',
+    bind : {
+        component : 'component'
+    }
+})
+class DynamicComp {
+    tab:Tab;
+    constructor(loader:PrivateComponentLoader, location:PrivateComponentLocation) {
+        console.debug('loader')
+        this.loader = loader;
+        this.location = location;   
+    }
+    set component(ComponentConstructor) {
+        this.loader.load(ComponentConstructor, this.location).then((tab) => {
+            console.debug('IS there a tab', tab);
+            this.tab = tab;
+        });
+    }
+}
+
+
 @Component({
     selector: 'tab',
     bind: {
@@ -80,7 +103,6 @@ export class Tabs {
     }
 })
 @Template({
-    directives: [Tabs],
     inline: `
         <div [hidden]="!active">
             <content></content>

@@ -19,13 +19,13 @@
 </head>
 <body>
     <hello>
-    Loading.......
+    Loading...
     </hello>
 </body>
 
 <!-- Application bootstrap logic -->
 <script>
-    System.import('tabs')
+    System.import('tabsDynamic')
         .then(function(module) {
             zone = zone.fork(Zone.longStackTraceZone);            
             return module.main();
